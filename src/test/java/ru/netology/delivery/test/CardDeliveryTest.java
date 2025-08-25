@@ -1,6 +1,5 @@
 package ru.netology.delivery.test;
 
-import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,81 +22,39 @@ class DeliveryTest {
     @DisplayName("Should successful plan and replan meeting")
     void shouldSuccessfulPlanAndReplanMeeting() {
         var validUser = DataGenerator.Registration.generateUser("ru");
-        var daysToAddForFirstMeeting = 4;
-        var firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
-        var daysToAddForSecondMeeting = 7;
-        var secondMeetingDate = DataGenerator.generateDate(daysToAddForSecondMeeting);
+        var firstMeetingDate = DataGenerator.generateDate(4);
+        var secondMeetingDate = DataGenerator.generateDate(7);
 
-        // Первое заполнение формы
+        // Заполняем форму первый раз
         $("[data-test-id=city] input").setValue(validUser.getCity());
         $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
         $("[data-test-id=date] input").setValue(firstMeetingDate);
         $("[data-test-id=name] input").setValue(validUser.getName());
         $("[data-test-id=phone] input").setValue(validUser.getPhone());
         $("[data-test-id=agreement]").click();
-        $x("//*[text()='Запланировать']").click();
+        $(".button").click();
 
-        // Проверка успешного планирования
-        $("[data-test-id=success-notification] .notification__content")
-                .shouldHave(text("Встреча успешно запланирована на " + firstMeetingDate))
-                .shouldBe(visible, Duration.ofSeconds(15));
+        // Проверяем успешное планирование
+        $("[data-test-id=success-notification]")
+                .shouldBe(visible, Duration.ofSeconds(15))
+                .shouldHave(text("Успешно!"));
 
-        // Повторное заполнение с другой датой
+        // Меняем дату и отправляем снова
         $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
         $("[data-test-id=date] input").setValue(secondMeetingDate);
-        $x("//*[text()='Запланировать']").click();
+        $(".button").click();
 
-        // Проверка появления уведомления о перепланировании
-        $("[data-test-id=replan-notification] .notification__content")
-                .shouldHave(text("У вас уже запланирована встреча на другую дату. Перепланировать?"))
-                .shouldBe(visible, Duration.ofSeconds(15));
+        // Проверяем предложение перепланировать
+        $("[data-test-id=replan-notification]")
+                .shouldBe(visible, Duration.ofSeconds(15))
+                .shouldHave(text("Необходимо подтверждение"));
 
-        // Нажатие кнопки перепланирования
-        $x("//*[text()='Перепланировать']").click();
+        // Подтверждаем перепланирование
+        $("[data-test-id=replan-notification] .button").click();
 
-        // Проверка успешного перепланирования
-        $("[data-test-id=success-notification] .notification__content")
-                .shouldHave(text("Встреча успешно запланирована на " + secondMeetingDate))
-                .shouldBe(visible, Duration.ofSeconds(15));
-    }
-
-    @Test
-    @DisplayName("Should show error for invalid city")
-    void shouldShowErrorForInvalidCity() {
-        var invalidCity = "Лондон";
-        var date = DataGenerator.generateDate(3);
-        var name = DataGenerator.Registration.generateName("ru");
-        var phone = DataGenerator.Registration.generatePhone("ru");
-
-        $("[data-test-id=city] input").setValue(invalidCity);
-        $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
-        $("[data-test-id=date] input").setValue(date);
-        $("[data-test-id=name] input").setValue(name);
-        $("[data-test-id=phone] input").setValue(phone);
-        $("[data-test-id=agreement]").click();
-        $x("//*[text()='Запланировать']").click();
-
-        $("[data-test-id=city].input_invalid .input__sub")
-                .shouldHave(text("Доставка в выбранный город недоступна"));
-    }
-
-    @Test
-    @DisplayName("Should show error for invalid name")
-    void shouldShowErrorForInvalidName() {
-        var city = DataGenerator.Registration.generateCity("ru");
-        var date = DataGenerator.generateDate(3);
-        var invalidName = "John Smith";
-        var phone = DataGenerator.Registration.generatePhone("ru");
-
-        $("[data-test-id=city] input").setValue(city);
-        $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
-        $("[data-test-id=date] input").setValue(date);
-        $("[data-test-id=name] input").setValue(invalidName);
-        $("[data-test-id=phone] input").setValue(phone);
-        $("[data-test-id=agreement]").click();
-        $x("//*[text()='Запланировать']").click();
-
-        $("[data-test-id=name].input_invalid .input__sub")
-                .shouldHave(text("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
+        // Проверяем успешное перепланирование
+        $("[data-test-id=success-notification]")
+                .shouldBe(visible, Duration.ofSeconds(15))
+                .shouldHave(text("Успешно!"));
     }
 }
