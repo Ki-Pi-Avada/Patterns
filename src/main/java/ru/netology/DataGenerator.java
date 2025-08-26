@@ -18,8 +18,13 @@ public class DataGenerator {
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
 
-    public static String generateCity(Faker faker) {
-        return faker.address().city();
+    public static String generateCity(String locale) {
+        String[] validCities = {
+                "Москва", "Санкт-Петербург", "Новосибирск", "Екатеринбург", "Казань",
+                "Нижний Новгород", "Челябинск", "Самара", "Омск", "Ростов-на-Дону",
+                "Уфа", "Красноярск", "Воронеж", "Пермь", "Волгоград"
+        };
+        return validCities[new Random().nextInt(validCities.length)];
     }
 
     public static String generateName(Faker faker) {
@@ -38,7 +43,7 @@ public class DataGenerator {
         public static UserInfo generateUser(String locale) {
             faker =new Faker(new Locale(locale));
             return new UserInfo(
-                    generateCity(faker),
+                    generateCity(locale),
                     generateName(faker),
                     generatePhone(faker)
             );
