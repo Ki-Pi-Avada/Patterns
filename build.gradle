@@ -20,7 +20,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'com.codeborne:selenide:6.19.1'
-    implementation group: 'com.github.javafaker', name: 'javafaker', version: '1.0.2'
+    implementation 'com.github.javafaker:javafaker:1.0.2'
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
     testCompileOnly 'org.projectlombok:lombok:1.18.36'
